@@ -1,0 +1,132 @@
+/* ==========================================================================
+   SALEHUNT — Design Tokens: Typography
+   Source: Figma Style Guide (03. Tipografia)
+   Font: Inter (Google Fonts) — 400, 500, 700
+   Line-height padrão: 140%
+   ========================================================================== */
+
+:root {
+    /* ── Font Family ──────────────────────────────────────────────────────── */
+    --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
+    /* ── Font Weights ─────────────────────────────────────────────────────── */
+    --font-regular: 400;
+    --font-medium: 500;
+    --font-bold: 700;
+
+    /* ── Font Sizes ───────────────────────────────────────────────────────── */
+    --text-display-1: 48px;
+    --text-display-2: 40px;
+    --text-title-1: 32px;
+    --text-title-2: 32px;
+    --text-subtitle-1: 24px;
+    --text-subtitle-2: 24px;
+    --text-body: 16px;
+    --text-small: 14px;
+    --text-xs: 12px;
+
+    /* ── Label Sizes ──────────────────────────────────────────────────────── */
+    --label-xs: 10px;
+    --label-sm: 12px;
+    --label-md: 14px;
+    --label-lg: 16px;
+    --label-xl: 18px;
+
+    /* ── Line Height ──────────────────────────────────────────────────────── */
+    --leading: 1.4;
+}
+
+/* ── Utility Classes ──────────────────────────────────────────────────────── */
+
+.display-1 {
+    font-size: var(--text-display-1);
+    font-weight: var(--font-regular);
+    line-height: var(--leading);
+}
+
+.display-2 {
+    font-size: var(--text-display-2);
+    font-weight: var(--font-regular);
+    line-height: var(--leading);
+}
+
+.title-1 {
+    font-size: var(--text-title-1);
+    font-weight: var(--font-regular);
+    line-height: var(--leading);
+}
+
+.title-2 {
+    font-size: var(--text-title-2);
+    font-weight: var(--font-medium);
+    line-height: var(--leading);
+}
+
+.subtitle-1 {
+    font-size: var(--text-subtitle-1);
+    font-weight: var(--font-regular);
+    line-height: var(--leading);
+}
+
+.subtitle-2 {
+    font-size: var(--text-subtitle-2);
+    font-weight: var(--font-medium);
+    line-height: var(--leading);
+}
+
+.text-body {
+    font-size: var(--text-body);
+    font-weight: var(--font-medium);
+    line-height: var(--leading);
+}
+
+.text-placeholder {
+    font-size: var(--text-body);
+    font-weight: var(--font-medium);
+    line-height: var(--leading);
+    color: var(--color-gray-400);
+}
+
+.text-small {
+    font-size: var(--text-small);
+    font-weight: var(--font-medium);
+    line-height: var(--leading);
+}
+
+.text-xs {
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    line-height: var(--leading);
+}
+
+/* ── Labels ───────────────────────────────────────────────────────────────── */
+
+.label-xs {
+    font-size: var(--label-xs);
+    font-weight: var(--font-medium);
+    line-height: var(--leading);
+}
+
+.label-sm {
+    font-size: var(--label-sm);
+    font-weight: var(--font-medium);
+    line-height: var(--leading);
+}
+
+.label-md {
+    font-size: var(--label-md);
+    font-weight: var(--font-medium);
+    line-height: var(--leading);
+}
+
+.label-lg {
+    font-size: var(--label-lg);
+    font-weight: var(--font-medium);
+    line-height: var(--leading);
+}
+
+.label-xl {
+    font-size: var(--label-xl);
+    font-weight: var(--font-medium);
+    line-height: var(--leading);
+}

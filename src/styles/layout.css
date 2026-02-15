@@ -1,0 +1,59 @@
+/* ==========================================================================
+   SALEHUNT — Design Tokens: Layout & Spacing
+   Source: Figma Style Guide (02. Regras de Layout)
+   ========================================================================== */
+
+:root {
+    /* ── Spacing Scale (base 8px) ─────────────────────────────────────────── */
+    --space-1: 8px;
+    --space-2: 16px;
+    --space-3: 24px;
+    --space-4: 32px;
+    --space-5: 40px;
+    --space-6: 64px;
+    --space-7: 80px;
+    --space-8: 96px;
+    --space-9: 120px;
+
+    /* ── Grid ──────────────────────────────────────────────────────────────── */
+    --grid-gap: 24px;
+    --grid-margin-desktop: 48px;
+    --grid-margin-tablet: 48px;
+    --grid-margin-mobile: 32px;
+    --grid-columns-desktop: 12;
+    --grid-columns-tablet: 6;
+    --grid-columns-mobile: 2;
+}
+
+/* ── Grid Container ───────────────────────────────────────────────────────── */
+
+.grid-container {
+    display: grid;
+    gap: var(--grid-gap);
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-inline: var(--grid-margin-mobile);
+    grid-template-columns: repeat(var(--grid-columns-mobile), 1fr);
+}
+
+/* Tablet — ≥768px */
+@media (min-width: 768px) {
+    .grid-container {
+        padding-inline: var(--grid-margin-tablet);
+        grid-template-columns: repeat(var(--grid-columns-tablet), 1fr);
+    }
+}
+
+/* Desktop — ≥1024px */
+@media (min-width: 1024px) {
+    .grid-container {
+        padding-inline: var(--grid-margin-desktop);
+        grid-template-columns: repeat(var(--grid-columns-desktop), 1fr);
+    }
+}
+
+/* ── Breakpoint tokens (for reference in JS if needed) ────────────────────── */
+/* Mobile:  < 768px   → 2 columns,  32px margin  */
+/* Tablet:  ≥ 768px   → 6 columns,  48px margin  */
+/* Desktop: ≥ 1024px  → 12 columns, 48px margin  */

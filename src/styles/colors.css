@@ -1,0 +1,23 @@
+/* ==========================================================================
+   SALEHUNT — Design Tokens: Colors
+   Source: Figma Style Guide (01. Cores)
+   ========================================================================== */
+
+:root {
+    /* ── Branding ─────────────────────────────────────────────────────────── */
+    --color-primary: #437EF7;
+    --color-primary-contrast: #2A5ABB;
+
+    /* ── Status ───────────────────────────────────────────────────────────── */
+    --color-success: #05C270;
+    --color-info: #0163F7;
+    --color-warning: #FFCC01;
+    --color-error: #FF3B3B;
+
+    /* ── Base (Neutros) ───────────────────────────────────────────────────── */
+    --color-gray-900: #222222;
+    --color-gray-400: #A0ABC0;
+    --color-gray-300: #D5DCE9;
+    --color-gray-100: #F4F6F9;
+    --color-white: #FFFFFF;
+}

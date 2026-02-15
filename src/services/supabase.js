@@ -8,3 +8,11 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+// Eagerly initialize the session BEFORE React mounts.
+// This prevents React 18 StrictMode double-mount from consuming
+// the URL hash tokens (access_token, type=recovery) on the first
+// mount and then aborting, leaving the second mount without tokens.
+// By calling getSession() here at module level, the supabase client
+// processes the hash tokens synchronously before any component mounts.
+export const sessionReady = supabase.auth.getSession()
