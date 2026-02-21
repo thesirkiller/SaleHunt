@@ -10,41 +10,29 @@ import VerifyEmail from './pages/VerifyEmail'
 import EmailVerified from './pages/EmailVerified'
 import AuthCallback from './pages/AuthCallback'
 import Onboarding from './pages/Onboarding'
+import Dashboard from './pages/Dashboard'
+import WorkspaceSetup from './pages/WorkspaceSetup'
 
+// Rota protegida: exige autenticação + onboarding concluído
 const ProtectedRoute = ({ children }) => {
   const { user, profile, loading, isPasswordRecovery } = useAuth()
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">Carregando...</div>
   if (!user) return <Navigate to="/login" replace />
-
-  // If user came from a password recovery link, redirect to reset page
-  if (isPasswordRecovery) {
-    return <Navigate to="/nova-senha" replace />
-  }
-
-  // If user is logged in but hasn't finished onboarding, redirect
-  if (profile && !profile.onboarding_completed) {
-    return <Navigate to="/onboarding" replace />
-  }
+  if (isPasswordRecovery) return <Navigate to="/nova-senha" replace />
+  if (!profile || !profile.onboarding_completed) return <Navigate to="/onboarding" replace />
 
   return children
 }
 
+// Rota de onboarding: só para usuários que ainda não concluíram o onboarding
 const OnboardingRoute = ({ children }) => {
   const { user, profile, loading, isPasswordRecovery } = useAuth()
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">Carregando...</div>
   if (!user) return <Navigate to="/login" replace />
-
-  // If user came from a password recovery link, redirect to reset page
-  if (isPasswordRecovery) {
-    return <Navigate to="/nova-senha" replace />
-  }
-
-  // If already completed, go to dashboard
-  if (profile?.onboarding_completed) {
-    return <Navigate to="/" replace />
-  }
+  if (isPasswordRecovery) return <Navigate to="/nova-senha" replace />
+  if (profile?.onboarding_completed) return <Navigate to="/" replace />
 
   return children
 }
@@ -73,11 +61,21 @@ function App() {
             }
           />
 
+          {/* WorkspaceSetup: rota protegida para criar workspaces adicionais */}
+          <Route
+            path="/workspace/criar"
+            element={
+              <ProtectedRoute>
+                <WorkspaceSetup />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/"
             element={
               <ProtectedRoute>
-                <div className="p-8">Dashboard (Em breve)</div>
+                <Dashboard />
               </ProtectedRoute>
             }
           />

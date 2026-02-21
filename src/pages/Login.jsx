@@ -1,12 +1,26 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff } from 'lucide-react'
 import Logo from '../components/Logo'
 import AuthFooter from '../components/AuthFooter'
 import { supabase } from '../services/supabase'
+import { useAuth } from '../contexts/AuthContext'
 
 const Login = () => {
+    const { user, profile, loading: authLoading } = useAuth()
     const navigate = useNavigate()
+
+    // Redirect logged-in users
+    useEffect(() => {
+        if (authLoading) return
+        if (!user) return
+
+        if (!profile || !profile.onboarding_completed) {
+            navigate('/onboarding', { replace: true })
+        } else {
+            navigate('/', { replace: true })
+        }
+    }, [user, profile, authLoading, navigate])
     const [showPassword, setShowPassword] = useState(false)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')

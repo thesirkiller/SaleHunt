@@ -70,6 +70,7 @@ export const AuthProvider = ({ children }) => {
                 setSession(session)
                 const currentUser = session?.user ?? null
                 setUser(currentUser)
+                console.log('[Auth]', currentUser ? `✅ Logado como ${currentUser.email}` : '❌ Deslogado')
 
                 if (currentUser) {
                     await fetchProfile(currentUser.id)
@@ -104,6 +105,7 @@ export const AuthProvider = ({ children }) => {
         clearPasswordRecovery,
         signOut,
         refreshProfile: () => user && fetchProfile(user.id),
+        updateProfile: (updates) => setProfile(prev => prev ? { ...prev, ...updates } : prev),
     }
 
     return (
