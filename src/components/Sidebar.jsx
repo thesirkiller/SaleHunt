@@ -139,7 +139,9 @@ const Sidebar = ({
     const sidebarWidth = collapsed ? 64 : 220
     const sidebar = {
         width: sidebarWidth,
-        minHeight: '100vh',
+        height: '100vh',
+        position: 'sticky',
+        top: 0,
         backgroundColor: '#FFFFFF',
         borderRight: '1px solid #F3F4F6',
         display: 'flex',
@@ -147,7 +149,6 @@ const Sidebar = ({
         padding: '16px',
         transition: 'width 0.2s ease',
         flexShrink: 0,
-        position: 'relative',
         overflow: 'visible',
         fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
     }
@@ -378,13 +379,13 @@ const Sidebar = ({
                 {userDropOpen && (
                     <div style={{
                         position: 'absolute',
-                        bottom: 'calc(100% + 4px)',
-                        left: 0,
-                        right: 0,
+                        top: 0,
+                        left: 'calc(100% + 20px)',
+                        width: 240,
                         backgroundColor: '#FFFFFF',
                         border: '1px solid #E5E7EB',
                         borderRadius: 8,
-                        boxShadow: '0 -4px 16px rgba(0,0,0,0.08)',
+                        boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
                         zIndex: 50,
                         overflow: 'hidden',
                         padding: '6px 4px',

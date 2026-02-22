@@ -11,6 +11,7 @@ import EmailVerified from './pages/EmailVerified'
 import AuthCallback from './pages/AuthCallback'
 import Onboarding from './pages/Onboarding'
 import Dashboard from './pages/Dashboard'
+import Negociacoes from './pages/Negociacoes'
 import WorkspaceSetup from './pages/WorkspaceSetup'
 
 // Rota protegida: exige autenticação + onboarding concluído
@@ -100,6 +101,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <WorkspaceSetup />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/negociacoes"
+            element={
+              <ProtectedRoute>
+                <Negociacoes />
               </ProtectedRoute>
             }
           />
