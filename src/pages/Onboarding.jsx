@@ -111,7 +111,7 @@ const Onboarding = () => {
 
                 // 2. Carrega cores customizadas
                 const { data: colors } = await supabase
-                    .from('custom_brand_colors')
+                    .from('colors') // Antiga custom_brand_colors
                     .select('hex')
                     .order('created_at', { ascending: true })
                 if (colors) setCustomColors(colors.map(c => c.hex))
@@ -137,12 +137,12 @@ const Onboarding = () => {
             setStep(next)
 
             if (user) {
-                // Atualiza onboarding_step no profile
+                // Atualiza onboarding_step no users
                 supabase
-                    .from('profiles')
+                    .from('users') // Em vez de profiles
                     .update({ onboarding_step: next })
                     .eq('id', user.id)
-                    .then(({ error }) => { if (error) console.error('profile step save:', error.message) })
+                    .then(({ error }) => { if (error) console.error('user step save:', error.message) })
 
                 // Salva dados do step atual no workspace
                 if (workspaceId) {
@@ -219,42 +219,53 @@ const Onboarding = () => {
             })
     }
 
-    const handleComplete = () => {
+    const handleComplete = async () => {
         setLoading(true)
+        setError(null)
 
-        // Salva dados finais no workspace + marca onboarding concluído no profile
-        Promise.all([
-            supabase
-                .from('profiles')
-                .update({ onboarding_completed: true, onboarding_step: 8 })
-                .eq('id', user.id),
+        try {
+            // Salva dados finais no workspace + marca onboarding concluído no profile
+            // Agora AGUARDAMOS as promessas resolverem antes de navegar
+            const [profileRes, wsRes] = await Promise.all([
+                supabase
+                    .from('users') // Em vez de profiles
+                    .update({ onboarding_completed: true, onboarding_step: 8 })
+                    .eq('id', user.id),
 
-            workspaceId
-                ? supabase
-                    .from('workspaces')
-                    .update({
-                        name: workspaceName || 'Meu Workspace',
-                        cnpj: workspaceCnpj || null,
-                        brand_color: brandColor || '#12BF7D',
-                        brand_logo_url: brandLogo || null,
-                        company_size: companySize || null,
-                        market_sector: marketSector || null,
-                        team_size: teamSize || null,
-                    })
-                    .eq('id', workspaceId)
-                : Promise.resolve({ error: null }),
-        ]).then(([profileRes, wsRes]) => {
-            if (profileRes.error) console.error('Profile complete error:', profileRes.error.message)
-            if (wsRes.error) console.error('Workspace complete error:', wsRes.error.message)
-        })
+                workspaceId
+                    ? supabase
+                        .from('workspaces')
+                        .update({
+                            name: workspaceName || 'Meu Workspace',
+                            cnpj: workspaceCnpj || null,
+                            brand_color: brandColor || '#12BF7D',
+                            brand_logo_url: brandLogo || null,
+                            company_size: companySize || null,
+                            market_sector: marketSector || null,
+                            team_size: teamSize || null,
+                        })
+                        .eq('id', workspaceId)
+                    : Promise.resolve({ error: null }),
+            ])
 
-        // Atualiza estado local para OnboardingRoute deixar passar
-        updateProfile({
-            onboarding_completed: true,
-            onboarding_step: 8,
-        })
+            if (profileRes.error) throw new Error(`Erro ao salvar perfil: ${profileRes.error.message}`)
+            if (wsRes.error) throw new Error(`Erro ao salvar workspace: ${wsRes.error.message}`)
 
-        navigate('/', { replace: true })
+            // Atualiza estado local para OnboardingRoute deixar passar
+            updateProfile({
+                onboarding_completed: true,
+                onboarding_step: 8,
+            })
+
+            // Só navega DEPOIS de confirmar no banco
+            navigate('/', { replace: true })
+
+        } catch (err) {
+            console.error('Erro na finalização do onboarding:', err)
+            setError('Não foi possível concluir o onboarding. Verifique sua conexão e tente novamente.')
+        } finally {
+            setLoading(false)
+        }
     }
 
     /* ── Sidebar Step Indicator ────────────────────────────────────────────── */

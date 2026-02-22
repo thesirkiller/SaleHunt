@@ -244,10 +244,10 @@ const MiniAvatar = ({ name }) => {
 
 /* ── Dashboard Page ─────────────────────────────────────────────────────────── */
 const Dashboard = () => {
-    const { profile } = useAuth()
+    const { profile, workspace } = useAuth()
     const navigate = useNavigate()
 
-    const workspaceName = profile?.workspace_name || 'Meu Workspace'
+    const workspaceName = workspace?.name || 'Meu Workspace'
 
     const [barPeriod, setBarPeriod] = useState('12 meses')
     const [donutPeriod, setDonutPeriod] = useState('12 meses')
@@ -263,7 +263,7 @@ const Dashboard = () => {
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F9FAFB', fontFamily: "'Inter', system-ui, sans-serif" }}>
-            <Sidebar activeItem="dashboard" workspaceName={workspaceName} />
+            <Sidebar activeItem="dashboard" />
 
             <main style={{ flex: 1, padding: '32px 40px', overflowY: 'auto', minWidth: 0 }}>
 

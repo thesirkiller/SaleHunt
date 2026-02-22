@@ -100,11 +100,11 @@ const RESOURCE_ITEMS = [
 
 const Sidebar = ({
     activeItem = 'dashboard',
-    workspaceName = 'Meu Workspace',
-    workspaces = [],
 }) => {
-    const { user, profile, signOut } = useAuth()
+    const { user, profile, workspace, workspaces, signOut, updateWorkspace } = useAuth()
     const navigate = useNavigate()
+
+    const workspaceName = workspace?.name || 'Meu Workspace'
 
     const userName = profile?.full_name || user?.email?.split('@')[0] || 'Usuário'
     const userEmail = user?.email || ''
@@ -189,10 +189,7 @@ const Sidebar = ({
             {/* ── TOPO: Logo + Collapse ── */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
                 {!collapsed && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 20, fontWeight: 800, lineHeight: 1 }}>
-                        <span style={{ color: '#22c55e' }}>$</span>
-                        <span style={{ color: '#111827' }}>aleHunt</span>
-                    </div>
+                    <Logo variant="color-dark" height={24} />
                 )}
                 <button
                     onClick={() => setCollapsed(c => !c)}
@@ -264,9 +261,13 @@ const Sidebar = ({
                             </div>
 
                             {/* Additional workspaces */}
-                            {workspaces.filter(w => w.name !== workspaceName).map(ws => (
+                            {workspaces.filter(w => w.id !== workspace?.id).map(ws => (
                                 <div
                                     key={ws.id}
+                                    onClick={() => {
+                                        updateWorkspace(ws)
+                                        setWsDropOpen(false)
+                                    }}
                                     style={{
                                         display: 'flex', alignItems: 'center', gap: 8,
                                         padding: '8px 10px', borderRadius: 6,
@@ -302,7 +303,7 @@ const Sidebar = ({
             </div>
 
             {/* ── MENU ── */}
-            <div style={{ flex: 1, overflow: 'hidden' }}>
+            <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', minHeight: 0 }}>
                 {!collapsed && <p style={sectionLabel}>MENU</p>}
 
                 {MENU_ITEMS.map(item => (
@@ -371,7 +372,7 @@ const Sidebar = ({
             </div>
 
             {/* ── RODAPÉ: Usuário ── */}
-            <div ref={userDropRef} style={{ position: 'relative', borderTop: '1px solid #F3F4F6', paddingTop: 12, marginTop: 8 }}>
+            <div ref={userDropRef} style={{ position: 'relative', borderTop: '1px solid #F3F4F6', paddingTop: 12, marginTop: 12, flexShrink: 0 }}>
 
                 {/* User dropdown (opens upward) */}
                 {userDropOpen && (

@@ -15,24 +15,57 @@ import WorkspaceSetup from './pages/WorkspaceSetup'
 
 // Rota protegida: exige autenticação + onboarding concluído
 const ProtectedRoute = ({ children }) => {
-  const { user, profile, loading, isPasswordRecovery } = useAuth()
+  const { user, profile, loading, isInitialized, isPasswordRecovery } = useAuth()
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Carregando...</div>
+  if (loading || !isInitialized) return <div className="min-h-screen flex items-center justify-center">Carregando...</div>
   if (!user) return <Navigate to="/login" replace />
   if (isPasswordRecovery) return <Navigate to="/nova-senha" replace />
-  if (!profile || !profile.onboarding_completed) return <Navigate to="/onboarding" replace />
+
+  // Se logado mas sem perfil carregado no context, espera um pouco mais (evita flash pro onboarding)
+  if (user && !profile) {
+    return <div className="min-h-screen flex items-center justify-center">Carregando perfil...</div>
+  }
+
+  // SE COMPLETOU: Prossegue. SE NÃO: Vai pro onboarding.
+  const isComplete = profile?.onboarding_completed === true || profile?.onboarding_step === 8
+
+  if (!isComplete) {
+    return <Navigate to="/onboarding" replace />
+  }
 
   return children
 }
 
-// Rota de onboarding: só para usuários que ainda não concluíram o onboarding
 const OnboardingRoute = ({ children }) => {
-  const { user, profile, loading, isPasswordRecovery } = useAuth()
+  const { user, profile, loading, isInitialized, isPasswordRecovery } = useAuth()
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Carregando...</div>
+  if (loading || !isInitialized) return <div className="min-h-screen flex items-center justify-center">Carregando...</div>
   if (!user) return <Navigate to="/login" replace />
   if (isPasswordRecovery) return <Navigate to="/nova-senha" replace />
-  if (profile?.onboarding_completed) return <Navigate to="/" replace />
+
+  // SE COMPLETOU: bloqueia acesso ao onboarding e joga pro dashboard
+  const isComplete = profile?.onboarding_completed === true || profile?.onboarding_step === 8
+
+  if (isComplete) {
+    return <Navigate to="/" replace />
+  }
+
+  return children
+}
+
+// Rota para quem NÃO está logado (Login, Cadastro). Se logar, é expulso daqui.
+const PublicRoute = ({ children }) => {
+  const { user, profile, loading, isInitialized } = useAuth()
+
+  if (loading || !isInitialized) return <div className="min-h-screen flex items-center justify-center">Carregando...</div>
+
+  if (user) {
+    // Só redireciona se o perfil já estiver disponível para sabermos o destino
+    if (!profile) return <div className="min-h-screen flex items-center justify-center">Carregando perfil...</div>
+
+    const isComplete = profile?.onboarding_completed === true || profile?.onboarding_step === 8
+    return <Navigate to={isComplete ? "/" : "/onboarding"} replace />
+  }
 
   return children
 }
@@ -42,8 +75,8 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/cadastro" element={<Register />} />
+          <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+          <Route path="/cadastro" element={<PublicRoute><Register /></PublicRoute>} />
           <Route path="/definir-senha" element={<SetPassword />} />
           <Route path="/verificar-email" element={<VerifyEmail />} />
           <Route path="/email-verificado" element={<EmailVerified />} />

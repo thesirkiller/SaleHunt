@@ -10,17 +10,6 @@ const Login = () => {
     const { user, profile, loading: authLoading } = useAuth()
     const navigate = useNavigate()
 
-    // Redirect logged-in users
-    useEffect(() => {
-        if (authLoading) return
-        if (!user) return
-
-        if (!profile || !profile.onboarding_completed) {
-            navigate('/onboarding', { replace: true })
-        } else {
-            navigate('/', { replace: true })
-        }
-    }, [user, profile, authLoading, navigate])
     const [showPassword, setShowPassword] = useState(false)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
