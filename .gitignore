@@ -27,3 +27,6 @@ dist-ssr
 *.sln
 *.sw?
 *.env
+
+# Local services / schema
+src/services/schema.js
