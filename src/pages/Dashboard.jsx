@@ -9,6 +9,7 @@ import {
     Search,
     MoreVertical,
     Plus,
+    Download,
 } from 'lucide-react'
 import {
     Chart as ChartJS,
@@ -23,6 +24,8 @@ import { Bar, Doughnut } from 'react-chartjs-2'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend)
 import Sidebar from '../components/Sidebar'
+import PageHeader from '../components/PageHeader'
+import NewProposalModal from '../components/NewProposalModal'
 import { useAuth } from '../contexts/AuthContext'
 
 /* ── Design tokens ─────────────────────────────────────────────────────────── */
@@ -253,6 +256,7 @@ const Dashboard = () => {
     const [donutPeriod, setDonutPeriod] = useState('12 meses')
     const [search, setSearch] = useState('')
     const [hoveredRow, setHoveredRow] = useState(null)
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
     const th = {
         padding: '10px 14px', textAlign: 'left', fontSize: 12,
@@ -265,270 +269,263 @@ const Dashboard = () => {
         <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F9FAFB', fontFamily: "'Inter', system-ui, sans-serif" }}>
             <Sidebar activeItem="dashboard" />
 
-            <main style={{ flex: 1, padding: '32px 40px', overflowY: 'auto', minWidth: 0 }}>
+            <main style={{ flex: 1, padding: '0', overflowY: 'auto', minWidth: 0 }}>
 
-                {/* ── BREADCRUMB ── */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                    <Home size={14} color={GRAY_LIGHT} />
-                    <span style={{ fontSize: 13, color: GRAY_LIGHT }}>›</span>
-                    <span style={{ fontSize: 13, color: GREEN, fontWeight: 500 }}>Dashboard</span>
-                </div>
-
-                {/* ── PAGE HEADER ── */}
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
-                    <div>
-                        <h1 style={{ margin: '0 0 6px 0', fontSize: 28, fontWeight: 800, color: TEXT_DARK, letterSpacing: '-0.5px' }}>
-                            Dashboard
-                        </h1>
-                        <p style={{ margin: 0, fontSize: 14, color: GRAY_TEXT, maxWidth: 440, lineHeight: 1.5 }}>
-                            Acesse informações principais, resumo das métricas do seu negócio e as últimas atividades das suas propostas.
-                        </p>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, paddingTop: 4 }}>
-                        <button style={{
-                            display: 'flex', alignItems: 'center', gap: 6,
-                            padding: '8px 14px', border: `1px solid ${BORDER}`, borderRadius: 8,
-                            backgroundColor: '#FFFFFF', cursor: 'pointer', fontSize: 13,
-                            color: TEXT_DARK, fontWeight: 500,
-                        }}>
-                            <SlidersHorizontal size={14} color={GRAY_TEXT} />
-                            Filtros
-                        </button>
-                        <button style={{
-                            display: 'flex', alignItems: 'center', gap: 6,
-                            padding: '8px 14px', border: `1px solid ${BORDER}`, borderRadius: 8,
-                            backgroundColor: '#FFFFFF', cursor: 'pointer', fontSize: 13,
-                            color: TEXT_DARK, fontWeight: 500,
-                        }}>
-                            <Calendar size={14} color={GRAY_TEXT} />
-                            6 Fev, 2025 – 13 Fev, 2025
-                        </button>
-                        <button style={{
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            width: 36, height: 36, border: `1px solid ${BORDER}`, borderRadius: 8,
-                            backgroundColor: '#FFFFFF', cursor: 'pointer',
-                        }}>
-                            <Share2 size={15} color={GRAY_TEXT} />
-                        </button>
-                    </div>
-                </div>
-
-                {/* ── METRIC CARDS ── */}
-                <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
-                    <MetricCard label="Valor em negociação" value="R$32.280" />
-                    <MetricCard label="Ticket médio" value="R$18.867" />
-                    <MetricCard label="Tempo de maturação" value="5.3 dias" />
-                    <MetricCard label="Tempo de abertura" value="2.3 dias" />
-                </div>
-
-                {/* ── CHARTS ROW ── */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 16, marginBottom: 24 }}>
-
-                    {/* Bar Chart */}
-                    <div style={{
-                        backgroundColor: '#FFFFFF', border: `1px solid ${BORDER}`,
-                        borderRadius: 12, padding: '20px 24px',
-                    }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                            <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: TEXT_DARK }}>
-                                Volume de propostas
-                            </h3>
-                            <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: GREEN, fontWeight: 600, padding: 0 }}>
-                                Ver detalhes
-                            </button>
-                        </div>
-                        {/* Legend */}
-                        <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
-                            {[['#86EFAC', 'Pendentes'], [GREEN_DARK, 'Aprovadas'], ['#D1D5DB', 'Reprovadas']].map(([color, label]) => (
-                                <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: GRAY_TEXT }}>
-                                    <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: color }} />
-                                    {label}
-                                </div>
-                            ))}
-                        </div>
-                        <BarChart data={BAR_DATA} maxVal={BAR_MAX} />
-                        <div style={{ marginTop: 16 }}>
-                            <PeriodFilter active={barPeriod} onSelect={setBarPeriod} />
-                        </div>
-                    </div>
-
-                    {/* Donut Chart */}
-                    <div style={{
-                        backgroundColor: '#FFFFFF', border: `1px solid ${BORDER}`,
-                        borderRadius: 12, padding: '20px 24px',
-                        display: 'flex', flexDirection: 'column',
-                    }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-                            <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: TEXT_DARK }}>
-                                Taxa de conversão
-                            </h3>
-                            <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: GREEN, fontWeight: 600, padding: 0 }}>
-                                Ver detalhes
-                            </button>
-                        </div>
-                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <DonutChart accepted={60} rejected={40} />
-                        </div>
-                        <div style={{ marginTop: 16 }}>
-                            <PeriodFilter active={donutPeriod} onSelect={setDonutPeriod} />
-                        </div>
-                    </div>
-                </div>
-
-                {/* ── PROPOSALS TABLE ── */}
-                <div style={{
-                    backgroundColor: '#FFFFFF', border: `1px solid ${BORDER}`,
-                    borderRadius: 12, overflow: 'hidden',
-                }}>
-                    {/* Table header */}
-                    <div style={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                        padding: '18px 20px', borderBottom: `1px solid ${BORDER}`,
-                    }}>
-                        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: TEXT_DARK }}>
-                            Últimas propostas movimentadas
-                        </h3>
+                <PageHeader
+                    breadcrumb={[{ label: 'Dashboard', active: true }]}
+                    title="Dashboard"
+                    description="Acesse informações principais, resumo das métricas do seu negócio e as últimas atividades das suas propostas."
+                    actions={
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            {/* Search */}
-                            <div style={{
-                                display: 'flex', alignItems: 'center', gap: 8,
-                                border: `1px solid ${BORDER}`, borderRadius: 8,
-                                padding: '7px 12px', backgroundColor: '#FFFFFF',
-                            }}>
-                                <Search size={14} color={GRAY_LIGHT} />
-                                <input
-                                    placeholder="Pesquisar..."
-                                    value={search}
-                                    onChange={e => setSearch(e.target.value)}
-                                    style={{
-                                        border: 'none', outline: 'none', fontSize: 13,
-                                        color: TEXT_DARK, width: 140, background: 'transparent',
-                                    }}
-                                />
-                            </div>
-                            {/* Filtros */}
                             <button style={{
                                 display: 'flex', alignItems: 'center', gap: 6,
-                                padding: '7px 14px', border: `1px solid ${BORDER}`, borderRadius: 8,
+                                padding: '8px 14px', border: `1px solid ${BORDER}`, borderRadius: 8,
                                 backgroundColor: '#FFFFFF', cursor: 'pointer', fontSize: 13,
                                 color: TEXT_DARK, fontWeight: 500,
                             }}>
-                                <SlidersHorizontal size={13} color={GRAY_TEXT} />
+                                <SlidersHorizontal size={14} color={GRAY_TEXT} />
                                 Filtros
                             </button>
-                            {/* Nova proposta */}
                             <button style={{
                                 display: 'flex', alignItems: 'center', gap: 6,
-                                padding: '7px 14px', border: 'none', borderRadius: 8,
-                                backgroundColor: TEXT_DARK, cursor: 'pointer', fontSize: 13,
-                                color: '#FFFFFF', fontWeight: 600,
+                                padding: '8px 14px', border: `1px solid ${BORDER}`, borderRadius: 8,
+                                backgroundColor: '#FFFFFF', cursor: 'pointer', fontSize: 13,
+                                color: TEXT_DARK, fontWeight: 500,
                             }}>
-                                <Plus size={14} color="#FFFFFF" />
-                                Nova proposta
+                                <Download size={14} color={GRAY_TEXT} />
+                                Exportar
+                            </button>
+                        </div>
+                    }
+                    primaryAction={{
+                        label: 'Nova proposta',
+                        icon: <Plus size={16} />,
+                        onClick: () => setIsModalOpen(true)
+                    }}
+                />
+                <div style={{ padding: '0 40px 40px 40px' }}>
+                    {/* ── METRIC CARDS ── */}
+                    <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
+                        <MetricCard label="Valor em negociação" value="R$32.280" />
+                        <MetricCard label="Ticket médio" value="R$18.867" />
+                        <MetricCard label="Tempo de maturação" value="5.3 dias" />
+                        <MetricCard label="Tempo de abertura" value="2.3 dias" />
+                    </div>
+
+                    {/* ── CHARTS ROW ── */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 16, marginBottom: 24 }}>
+
+                        {/* Bar Chart */}
+                        <div style={{
+                            backgroundColor: '#FFFFFF', border: `1px solid ${BORDER}`,
+                            borderRadius: 12, padding: '20px 24px',
+                        }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                                <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: TEXT_DARK }}>
+                                    Volume de propostas
+                                </h3>
+                                <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: GREEN, fontWeight: 600, padding: 0 }}>
+                                    Ver detalhes
+                                </button>
+                            </div>
+                            {/* Legend */}
+                            <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
+                                {[['#86EFAC', 'Pendentes'], [GREEN_DARK, 'Aprovadas'], ['#D1D5DB', 'Reprovadas']].map(([color, label]) => (
+                                    <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: GRAY_TEXT }}>
+                                        <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: color }} />
+                                        {label}
+                                    </div>
+                                ))}
+                            </div>
+                            <BarChart data={BAR_DATA} maxVal={BAR_MAX} />
+                            <div style={{ marginTop: 16 }}>
+                                <PeriodFilter active={barPeriod} onSelect={setBarPeriod} />
+                            </div>
+                        </div>
+
+                        {/* Donut Chart */}
+                        <div style={{
+                            backgroundColor: '#FFFFFF', border: `1px solid ${BORDER}`,
+                            borderRadius: 12, padding: '20px 24px',
+                            display: 'flex', flexDirection: 'column',
+                        }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                                <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: TEXT_DARK }}>
+                                    Taxa de conversão
+                                </h3>
+                                <button style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: GREEN, fontWeight: 600, padding: 0 }}>
+                                    Ver detalhes
+                                </button>
+                            </div>
+                            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <DonutChart accepted={60} rejected={40} />
+                            </div>
+                            <div style={{ marginTop: 16 }}>
+                                <PeriodFilter active={donutPeriod} onSelect={setDonutPeriod} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ── PROPOSALS TABLE ── */}
+                    <div style={{
+                        backgroundColor: '#FFFFFF', border: `1px solid ${BORDER}`,
+                        borderRadius: 12, overflow: 'hidden',
+                    }}>
+                        {/* Table header */}
+                        <div style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                            padding: '18px 20px', borderBottom: `1px solid ${BORDER}`,
+                        }}>
+                            <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: TEXT_DARK }}>
+                                Últimas propostas movimentadas
+                            </h3>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                {/* Search */}
+                                <div style={{
+                                    display: 'flex', alignItems: 'center', gap: 8,
+                                    border: `1px solid ${BORDER}`, borderRadius: 8,
+                                    padding: '7px 12px', backgroundColor: '#FFFFFF',
+                                }}>
+                                    <Search size={14} color={GRAY_LIGHT} />
+                                    <input
+                                        placeholder="Pesquisar..."
+                                        value={search}
+                                        onChange={e => setSearch(e.target.value)}
+                                        style={{
+                                            border: 'none', outline: 'none', fontSize: 13,
+                                            color: TEXT_DARK, width: 140, background: 'transparent',
+                                        }}
+                                    />
+                                </div>
+                                {/* Filtros */}
+                                <button style={{
+                                    display: 'flex', alignItems: 'center', gap: 6,
+                                    padding: '7px 14px', border: `1px solid ${BORDER}`, borderRadius: 8,
+                                    backgroundColor: '#FFFFFF', cursor: 'pointer', fontSize: 13,
+                                    color: TEXT_DARK, fontWeight: 500,
+                                }}>
+                                    <SlidersHorizontal size={13} color={GRAY_TEXT} />
+                                    Filtros
+                                </button>
+                                {/* Nova proposta */}
+                                <button style={{
+                                    display: 'flex', alignItems: 'center', gap: 6,
+                                    padding: '7px 14px', border: 'none', borderRadius: 8,
+                                    backgroundColor: TEXT_DARK, cursor: 'pointer', fontSize: 13,
+                                    color: '#FFFFFF', fontWeight: 600,
+                                }}>
+                                    <Plus size={14} color="#FFFFFF" />
+                                    Nova proposta
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Table */}
+                        <div style={{ overflowX: 'auto' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <thead>
+                                    <tr>
+                                        {['Nome da proposta', 'Data de abertura', 'Valor em negociação', 'Responsável', 'Cliente', 'Tipo', 'Status', ''].map((h, i) => (
+                                            <th key={i} style={th}>{h}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {PROPOSALS.filter(p =>
+                                        !search || p.name.toLowerCase().includes(search.toLowerCase())
+                                    ).map(row => (
+                                        <tr
+                                            key={row.id}
+                                            onMouseEnter={() => setHoveredRow(row.id)}
+                                            onMouseLeave={() => setHoveredRow(null)}
+                                            style={{
+                                                borderBottom: `1px solid #F3F4F6`,
+                                                backgroundColor: hoveredRow === row.id ? '#FAFAFA' : '#FFFFFF',
+                                                transition: 'background 0.1s',
+                                            }}
+                                        >
+                                            {/* Nome */}
+                                            <td style={{ padding: '12px 14px', fontSize: 13, color: TEXT_DARK, fontWeight: 500, whiteSpace: 'nowrap' }}>
+                                                {row.name}
+                                            </td>
+                                            {/* Data */}
+                                            <td style={{ padding: '12px 14px', fontSize: 13, color: GRAY_TEXT, whiteSpace: 'nowrap' }}>
+                                                {row.date}
+                                            </td>
+                                            {/* Valor */}
+                                            <td style={{ padding: '12px 14px', fontSize: 13, color: TEXT_DARK, whiteSpace: 'nowrap' }}>
+                                                {row.value}
+                                            </td>
+                                            {/* Responsável */}
+                                            <td style={{ padding: '12px 14px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                                    <MiniAvatar name={row.responsible} />
+                                                    <span style={{ fontSize: 13, color: TEXT_DARK, whiteSpace: 'nowrap' }}>{row.responsible}</span>
+                                                </div>
+                                            </td>
+                                            {/* Cliente */}
+                                            <td style={{ padding: '12px 14px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                                    <MiniAvatar name={row.client} />
+                                                    <span style={{ fontSize: 13, color: TEXT_DARK, whiteSpace: 'nowrap' }}>{row.client}</span>
+                                                </div>
+                                            </td>
+                                            {/* Tags */}
+                                            <td style={{ padding: '12px 14px' }}>
+                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                                                    {row.tags.map((t, ti) => <Tag key={ti} label={t.l} />)}
+                                                </div>
+                                            </td>
+                                            {/* Status */}
+                                            <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                                                <span style={{
+                                                    fontSize: 13,
+                                                    fontWeight: 600,
+                                                    color: STATUS_STYLES[row.status]?.color || GRAY_TEXT,
+                                                }}>
+                                                    {row.status}
+                                                </span>
+                                            </td>
+                                            {/* Actions */}
+                                            <td style={{ padding: '12px 10px' }}>
+                                                <button style={{
+                                                    background: 'none', border: 'none', cursor: 'pointer',
+                                                    padding: 4, color: GRAY_LIGHT, display: 'flex',
+                                                }}>
+                                                    <MoreVertical size={16} />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Table footer */}
+                        <div style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                            padding: '14px 20px', borderTop: `1px solid ${BORDER}`,
+                        }}>
+                            <span style={{ fontSize: 13, color: GRAY_TEXT }}>
+                                Mostrando <strong style={{ color: TEXT_DARK }}>10</strong> de <strong style={{ color: TEXT_DARK }}>129</strong> propostas
+                            </span>
+                            <button style={{
+                                padding: '8px 20px', border: `1px solid ${BORDER}`, borderRadius: 8,
+                                backgroundColor: '#FFFFFF', cursor: 'pointer', fontSize: 13,
+                                color: TEXT_DARK, fontWeight: 500,
+                            }}>
+                                Carregar mais
                             </button>
                         </div>
                     </div>
 
-                    {/* Table */}
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead>
-                                <tr>
-                                    {['Nome da proposta', 'Data de abertura', 'Valor em negociação', 'Responsável', 'Cliente', 'Tipo', 'Status', ''].map((h, i) => (
-                                        <th key={i} style={th}>{h}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {PROPOSALS.filter(p =>
-                                    !search || p.name.toLowerCase().includes(search.toLowerCase())
-                                ).map(row => (
-                                    <tr
-                                        key={row.id}
-                                        onMouseEnter={() => setHoveredRow(row.id)}
-                                        onMouseLeave={() => setHoveredRow(null)}
-                                        style={{
-                                            borderBottom: `1px solid #F3F4F6`,
-                                            backgroundColor: hoveredRow === row.id ? '#FAFAFA' : '#FFFFFF',
-                                            transition: 'background 0.1s',
-                                        }}
-                                    >
-                                        {/* Nome */}
-                                        <td style={{ padding: '12px 14px', fontSize: 13, color: TEXT_DARK, fontWeight: 500, whiteSpace: 'nowrap' }}>
-                                            {row.name}
-                                        </td>
-                                        {/* Data */}
-                                        <td style={{ padding: '12px 14px', fontSize: 13, color: GRAY_TEXT, whiteSpace: 'nowrap' }}>
-                                            {row.date}
-                                        </td>
-                                        {/* Valor */}
-                                        <td style={{ padding: '12px 14px', fontSize: 13, color: TEXT_DARK, whiteSpace: 'nowrap' }}>
-                                            {row.value}
-                                        </td>
-                                        {/* Responsável */}
-                                        <td style={{ padding: '12px 14px' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                                <MiniAvatar name={row.responsible} />
-                                                <span style={{ fontSize: 13, color: TEXT_DARK, whiteSpace: 'nowrap' }}>{row.responsible}</span>
-                                            </div>
-                                        </td>
-                                        {/* Cliente */}
-                                        <td style={{ padding: '12px 14px' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                                <MiniAvatar name={row.client} />
-                                                <span style={{ fontSize: 13, color: TEXT_DARK, whiteSpace: 'nowrap' }}>{row.client}</span>
-                                            </div>
-                                        </td>
-                                        {/* Tags */}
-                                        <td style={{ padding: '12px 14px' }}>
-                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                                                {row.tags.map((t, ti) => <Tag key={ti} label={t.l} />)}
-                                            </div>
-                                        </td>
-                                        {/* Status */}
-                                        <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
-                                            <span style={{
-                                                fontSize: 13,
-                                                fontWeight: 600,
-                                                color: STATUS_STYLES[row.status]?.color || GRAY_TEXT,
-                                            }}>
-                                                {row.status}
-                                            </span>
-                                        </td>
-                                        {/* Actions */}
-                                        <td style={{ padding: '12px 10px' }}>
-                                            <button style={{
-                                                background: 'none', border: 'none', cursor: 'pointer',
-                                                padding: 4, color: GRAY_LIGHT, display: 'flex',
-                                            }}>
-                                                <MoreVertical size={16} />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {/* Table footer */}
-                    <div style={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                        padding: '14px 20px', borderTop: `1px solid ${BORDER}`,
-                    }}>
-                        <span style={{ fontSize: 13, color: GRAY_TEXT }}>
-                            Mostrando <strong style={{ color: TEXT_DARK }}>10</strong> de <strong style={{ color: TEXT_DARK }}>129</strong> propostas
-                        </span>
-                        <button style={{
-                            padding: '8px 20px', border: `1px solid ${BORDER}`, borderRadius: 8,
-                            backgroundColor: '#FFFFFF', cursor: 'pointer', fontSize: 13,
-                            color: TEXT_DARK, fontWeight: 500,
-                        }}>
-                            Carregar mais
-                        </button>
-                    </div>
                 </div>
-
             </main>
+
+            <NewProposalModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+            />
         </div>
     )
 }

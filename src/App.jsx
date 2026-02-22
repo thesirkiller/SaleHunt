@@ -12,6 +12,9 @@ import AuthCallback from './pages/AuthCallback'
 import Onboarding from './pages/Onboarding'
 import Dashboard from './pages/Dashboard'
 import Negociacoes from './pages/Negociacoes'
+import Propostas from './pages/Propostas'
+import Clientes from './pages/Clientes'
+import Novidades from './pages/Novidades'
 import WorkspaceSetup from './pages/WorkspaceSetup'
 
 // Rota protegida: exige autenticação + onboarding concluído
@@ -106,10 +109,37 @@ function App() {
           />
 
           <Route
+            path="/propostas"
+            element={
+              <ProtectedRoute>
+                <Propostas />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
             path="/negociacoes"
             element={
               <ProtectedRoute>
                 <Negociacoes />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/clientes"
+            element={
+              <ProtectedRoute>
+                <Clientes />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/novidades"
+            element={
+              <ProtectedRoute>
+                <Novidades />
               </ProtectedRoute>
             }
           />
@@ -122,6 +152,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+
         </Routes>
       </BrowserRouter>
     </AuthProvider>

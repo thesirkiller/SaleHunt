@@ -375,12 +375,12 @@ const Sidebar = ({
             {/* ── RODAPÉ: Usuário ── */}
             <div ref={userDropRef} style={{ position: 'relative', borderTop: '1px solid #F3F4F6', paddingTop: 12, marginTop: 12, flexShrink: 0 }}>
 
-                {/* User dropdown (opens upward) */}
+                {/* User dropdown (opens upward-aligned) */}
                 {userDropOpen && (
                     <div style={{
                         position: 'absolute',
-                        top: 0,
-                        left: 'calc(100% + 20px)',
+                        bottom: -4,
+                        left: 'calc(100% + 12px)',
                         width: 240,
                         backgroundColor: '#FFFFFF',
                         border: '1px solid #E5E7EB',

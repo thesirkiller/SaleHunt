@@ -16,6 +16,8 @@ import {
     Users
 } from 'lucide-react'
 import Sidebar from '../components/Sidebar'
+import PageHeader from '../components/PageHeader'
+import NewProposalModal from '../components/NewProposalModal'
 import { useAuth } from '../contexts/AuthContext'
 
 /* ── Design Tokens (Sync with CSS variables) ────────────────────────────────── */
@@ -262,6 +264,7 @@ const Negociacoes = () => {
         aguardando: true,
         assinado: true,
     })
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
     const toggleStage = (id) => {
         setOpenStages(prev => ({ ...prev, [id]: !prev[id] }))
@@ -272,83 +275,18 @@ const Negociacoes = () => {
             <Sidebar activeItem="negociacoes" />
 
             <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                {/* Header & Fixed Content */}
-                <div style={{ padding: 'var(--space-4) var(--space-5) 0 var(--space-5)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', marginBottom: 'var(--space-1)' }}>
-                        <Home size={16} color="#9CA3AF" />
-                        <ChevronRight size={14} color="#9CA3AF" />
-                        <span style={{ fontSize: 'var(--text-xs)', color: COLORS.success, fontWeight: 'var(--font-bold)' }}>Propostas</span>
-                    </div>
-
-                    <div style={{ marginBottom: 'var(--space-3)' }}>
-                        <h1 style={{ margin: '0 0 var(--space-1) 0', fontSize: 'var(--text-title-2)', fontWeight: 'var(--font-bold)', color: COLORS.gray900 }}>Negociações</h1>
-                        <p style={{ margin: 0, fontSize: 'var(--text-small)', color: '#6B7280' }}>Veja, crie e gerencie as propostas para seus clientes</p>
-                    </div>
-
-                    <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'flex-end',
-                        marginBottom: 'var(--space-4)',
-                        borderBottom: '1px solid #E3E3E3'
-                    }}>
-                        <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
-                            {/* View Toggle */}
-                            <div style={{ display: 'flex', gap: 'var(--space-3)', paddingRight: 'var(--space-1)' }}>
-                                <button
-                                    onClick={() => setView('kanban')}
-                                    style={{
-                                        display: 'flex', alignItems: 'center', gap: 'var(--space-1)',
-                                        background: 'none', border: 'none', cursor: 'pointer',
-                                        padding: '12px 4px', fontSize: 'var(--text-small)', fontWeight: 'var(--font-bold)',
-                                        color: view === 'kanban' ? COLORS.success : '#9CA3AF',
-                                        borderBottom: view === 'kanban' ? `2px solid ${COLORS.success}` : 'none',
-                                        marginBottom: -1
-                                    }}
-                                >
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'flex-start' }}>
-                                        <div style={{ width: 10, height: 2, backgroundColor: view === 'kanban' ? COLORS.success : '#9CA3AF', borderRadius: 1 }} />
-                                        <div style={{ width: 14, height: 2, backgroundColor: view === 'kanban' ? COLORS.success : '#9CA3AF', borderRadius: 1 }} />
-                                        <div style={{ width: 10, height: 2, backgroundColor: view === 'kanban' ? COLORS.success : '#9CA3AF', borderRadius: 1 }} />
-                                    </div>
-                                    Kanban
-                                </button>
-                                <button
-                                    onClick={() => setView('list')}
-                                    style={{
-                                        display: 'flex', alignItems: 'center', gap: 'var(--space-1)',
-                                        background: 'none', border: 'none', cursor: 'pointer',
-                                        padding: '12px 4px', fontSize: 'var(--text-small)', fontWeight: 'var(--font-bold)',
-                                        color: view === 'list' ? COLORS.success : '#9CA3AF',
-                                        borderBottom: view === 'list' ? `2px solid ${COLORS.success}` : 'none',
-                                        marginBottom: -1
-                                    }}
-                                >
-                                    <ListIcon size={18} /> Lista
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Search & Actions */}
-                        <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center', paddingBottom: 8 }}>
-                            <div style={{ position: 'relative' }}>
-                                <Search size={16} color="#9CA3AF" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
-                                <input
-                                    placeholder="Pesquisar..."
-                                    value={search}
-                                    onChange={e => setSearch(e.target.value)}
-                                    style={{
-                                        padding: 'var(--space-1) 12px var(--space-1) 36px',
-                                        borderRadius: 8,
-                                        border: '1px solid #E5E7EB',
-                                        fontSize: 'var(--text-small)',
-                                        width: 200,
-                                        outline: 'none',
-                                        backgroundColor: '#FFF'
-                                    }}
-                                />
-                            </div>
-
+                <PageHeader
+                    breadcrumb={[{ label: 'Negociações', active: true }]}
+                    title="Negociações"
+                    description="Veja, crie e gerencie as propostas para seus clientes"
+                    searchProps={{
+                        value: search,
+                        onChange: (e) => setSearch(e.target.value),
+                        placeholder: "Pesquisar por nome ou empresa...",
+                        width: 260
+                    }}
+                    actions={
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                             {/* Vertical Separator */}
                             <div style={{
                                 width: 0,
@@ -365,17 +303,37 @@ const Negociacoes = () => {
                             }}>
                                 <SlidersHorizontal size={16} /> Filtros
                             </button>
-                            <button style={{
-                                display: 'flex', alignItems: 'center', gap: 'var(--space-1)',
-                                padding: 'var(--space-1) var(--space-2)', borderRadius: 8,
-                                border: 'none', backgroundColor: COLORS.gray900,
-                                fontSize: 'var(--text-small)', fontWeight: 'var(--font-bold)', color: '#FFF', cursor: 'pointer'
-                            }}>
+                            <button
+                                onClick={() => setIsModalOpen(true)}
+                                style={{
+                                    display: 'flex', alignItems: 'center', gap: 'var(--space-1)',
+                                    padding: 'var(--space-1) var(--space-2)', borderRadius: 8,
+                                    border: 'none', backgroundColor: COLORS.gray900,
+                                    fontSize: 'var(--text-small)', fontWeight: 'var(--font-bold)', color: '#FFF', cursor: 'pointer'
+                                }}
+                            >
                                 <Plus size={16} /> Nova proposta
                             </button>
                         </div>
-                    </div>
-                </div>
+                    }
+                    tabs={{
+                        items: [
+                            {
+                                label: 'Kanban',
+                                icon: <LayoutGrid size={18} />,
+                                active: view === 'kanban',
+                                onClick: () => setView('kanban')
+                            },
+                            {
+                                label: 'Lista',
+                                icon: <ListIcon size={18} />,
+                                active: view === 'list',
+                                onClick: () => setView('list')
+                            }
+                        ],
+                        activeColor: '#22c55e'
+                    }}
+                />
 
                 {/* View Content (Scrollable Area) */}
                 <div style={{ flex: 1, overflowY: view === 'list' ? 'auto' : 'hidden', padding: '0 var(--space-5) var(--space-5) var(--space-5)' }}>
@@ -549,6 +507,11 @@ const Negociacoes = () => {
                     )}
                 </div>
             </main>
+
+            <NewProposalModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+            />
         </div>
     )
 }
